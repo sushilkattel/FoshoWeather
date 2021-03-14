@@ -115,5 +115,16 @@
             android:textSize="20sp"
             android:fontFamily="@font/futuraptbook"
             android:textColor="@color/white"/>
+
+        <Button
+            android:id="@+id/getLocationBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Check" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#E91E63"
+            android:layout_below="@id/highTemperature"/>
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,8 +11,11 @@ import com.android.volley.toolbox.Volley
 class ApiUtils private constructor(context: Context) {
     private var requestQueue: RequestQueue = Volley.newRequestQueue(context.applicationContext)
 
-    fun fetchWeather (city: String, listener: CustomListener<String> ) {
-        val url = "https://api.openweathermap.org/data/2.5/weather?q=$city&APPID=$APIKey&units=metric&lang=en"
+    fun fetchWeather (lat: String, lon: String, listener: CustomListener<String> ) {
+        //api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
+        //val url = "https://api.openweathermap.org/data/2.5/weather?q=$city&APPID=$APIKey&units=metric&lang=en"
+        val url = "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$APIKey&units=imperial"
+        //val url = "https://api.openweathermap.org/data/2.5/onecall?lat=$lat&lon=$lon&exclude=hourly&appid=$APIKey&units=imperial"
 
         val request = StringRequest(Request.Method.GET, url,
             Response.Listener { response ->
@@ -22,6 +25,24 @@ class ApiUtils private constructor(context: Context) {
                 Log.e(TAG, error.toString())
                 listener.getResult("")
             }
+        )
+        requestQueue.add(request)
+    }
+
+    fun fetchWeatherForecast (lat: String, lon: String, listener: CustomListener<String> ) {
+        //api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
+        //val url = "https://api.openweathermap.org/data/2.5/weather?q=$city&APPID=$APIKey&units=metric&lang=en"
+        //val url = "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$APIKey&units=imperial"
+        val url = "https://api.openweathermap.org/data/2.5/onecall?lat=$lat&lon=$lon&exclude=minutely&appid=$APIKey&units=imperial"
+
+        val request = StringRequest(Request.Method.GET, url,
+                Response.Listener { response ->
+                    if (response != null) listener.getResult(response)
+                },
+                Response.ErrorListener { error ->
+                    Log.e(TAG, error.toString())
+                    listener.getResult("")
+                }
         )
         requestQueue.add(request)
     }
