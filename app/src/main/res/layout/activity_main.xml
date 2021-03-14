@@ -4,20 +4,116 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient_warm"
     tools:context=".MainActivity">
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:layout_editor_absoluteX="273dp"
-        tools:layout_editor_absoluteY="250dp"
-        android:background="@drawable/gradient_cold">
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/weatherIcon"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp" />
-    </LinearLayout>
+            app:srcCompat="@drawable/icon_sunny"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="54.6dp" />
+
+        <TextView
+            android:id="@+id/city"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DHANGADHI"
+            android:layout_below="@id/weatherIcon"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="9.5dp"
+            android:textSize="24sp"
+            android:fontFamily="@font/futuraptbook"
+            android:textColor="@color/white"/>
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SUNNY AF"
+            android:layout_below="@id/city"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="-5dp"
+            android:textSize="40sp"
+            android:fontFamily="@font/futuraptbook"
+            android:textColor="@color/white"/>
+
+        <TextView
+            android:id="@+id/temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30"
+            android:layout_below="@id/description"
+            android:layout_alignLeft="@id/description"
+            android:layout_marginTop="-16dp"
+            android:layout_marginLeft="55dp"
+            android:textSize="60sp"
+            android:fontFamily="@font/futuraptbook"
+            android:textColor="@color/white"/>
+
+        <TextView
+            android:id="@+id/degreeSymbol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="°"
+            android:layout_below="@id/description"
+            android:layout_alignRight="@id/temperature"
+            android:layout_marginRight="-20dp"
+            android:layout_marginTop="-10dp"
+            android:textSize="50sp"
+            android:fontFamily="@font/futuraptbook"
+            android:textColor="@color/white"/>
+        <TextView
+            android:id="@+id/feelsLike"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FEELS LIKE 30°"
+            android:layout_below="@id/temperature"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="-8dp"
+            android:layout_marginLeft="55dp"
+            android:textSize="15sp"
+            android:fontFamily="@font/futuraptbook"
+            android:textColor="@color/white"/>
+
+        <TextView
+            android:id="@+id/spacer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="|"
+            android:layout_below="@id/feelsLike"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="2dp"
+            android:layout_marginLeft="55dp"
+            android:textSize="15sp"
+            android:fontFamily="@font/futuraptbook"
+            android:textColor="@color/white"/>
+
+        <TextView
+            android:id="@+id/highTemperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="H: 10°"
+            android:layout_below="@id/feelsLike"
+            android:layout_alignRight="@id/spacer"
+            android:layout_marginRight="8dp"
+            android:textSize="20sp"
+            android:fontFamily="@font/futuraptbook"
+            android:textColor="@color/white"/>
+        <TextView
+            android:id="@+id/lowTemperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="L: 10°"
+            android:layout_below="@id/feelsLike"
+            android:layout_alignLeft="@id/spacer"
+            android:layout_marginLeft="10dp"
+            android:textSize="20sp"
+            android:fontFamily="@font/futuraptbook"
+            android:textColor="@color/white"/>
+    </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

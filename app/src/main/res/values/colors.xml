@@ -10,4 +10,6 @@
     <color name="darkBlue">#173F5F</color>
     <color name="lightBlue">#20639B</color>
     <color name="pinkish">#C3608B</color>
+    <color name="darkOrange">#C22828</color>
+    <color name="lightOrange">#EFA25F</color>
 </resources>
