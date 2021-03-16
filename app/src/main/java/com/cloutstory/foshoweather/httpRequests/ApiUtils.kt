@@ -46,6 +46,7 @@ class ApiUtils private constructor(context: Context) {
         )
         requestQueue.add(request)
     }
+
     companion object {
         private const val TAG = "ApiUtils"
         private var instance: ApiUtils? = null

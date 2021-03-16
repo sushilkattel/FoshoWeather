@@ -1,10 +1,8 @@
 package com.cloutstory.foshoweather
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -13,23 +11,18 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
-import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.cloutstory.foshoweather.httpRequests.CustomListener
 import com.cloutstory.foshoweather.httpRequests.ApiUtils
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import java.text.DecimalFormat
+import com.cloutstory.foshoweather.models.HourlyMetaData
+
+import com.google.gson.Gson
 
 class MainActivity : AppCompatActivity() {
     val context = this
@@ -49,6 +42,7 @@ class MainActivity : AppCompatActivity() {
         ApiUtils.getInstance(this)
         getLocationBtn()
         getLocation()
+        createHourlyCardView()
     }
     //get Location
 
@@ -121,8 +115,14 @@ class MainActivity : AppCompatActivity() {
         val data = JsonParser.parseString(WeatherJsonString).asJsonObject
         return JsonParser.parseString(WeatherJsonString).asJsonObject
     }
+    //String to Json Object
+    fun stringToWeatherForecast(WeatherForecastString: String): JsonObject {
+        val data = JsonParser.parseString(WeatherForecastString).asJsonObject
+        return data
+    }
+
     //Populate Weather Data
-    fun populateCurrentWeatherData() {
+    private fun populateCurrentWeatherData() {
         val fetchWeatherListener = object : CustomListener<String> {
             override fun getResult(result: String) {
               if(result.isNotEmpty()) {
@@ -149,6 +149,36 @@ class MainActivity : AppCompatActivity() {
         }
         ApiUtils.getInstance()
             ?.fetchWeather(lat = latitudeUser, lon = longitudeUser, listener = fetchWeatherListener)
+    }
+    //Populate Hourly Weather Data
+    private fun createHourlyCardView() {
+        val fetchWeatherForecastListener = object : CustomListener<String> {
+            override fun getResult(result: String) {
+                if (result.isNotEmpty()) {
+                    val forecastData = stringToWeatherForecast(result)
+                    val hourlyListJson = forecastData.get("hourly").asJsonArray
+
+                    fun hourlyJsonToArray(result: String): Array<HourlyMetaData>? {
+                        val gson = Gson()
+                        return gson.fromJson(hourlyListJson, Array<HourlyMetaData>::class.java)
+                    }
+                    val hourlyArray = hourlyJsonToArray(result)
+                    val hourlyArrayResponse = hourlyArray?.get(1).toString()
+                    Log.d("HourlyResult", hourlyArrayResponse)
+                    if (hourlyArray != null) {
+                        val hourlyCardRecyclerView = findViewById<RecyclerView>(R.id.hourlyTempRecyclerView)
+                        hourlyCardRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+                        val hourlyCardAdapter = HourlyCardAdapter(hourlyArray)
+                        hourlyCardRecyclerView.adapter = hourlyCardAdapter
+                    }
+                } else {
+                    Log.d("HourlyResult", "Could not Retrieve HourlyResult")
+                }
+            }
+
+        }
+        ApiUtils.getInstance()
+                ?.fetchWeatherForecast(lat = latitudeUser, lon = longitudeUser, listener = fetchWeatherForecastListener)
     }
     //Example: How to change Weather Icon
     fun getWeatherIcon() {

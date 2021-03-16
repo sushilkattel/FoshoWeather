@@ -122,9 +122,27 @@
             android:layout_height="wrap_content"
             android:text="Check" />
         <View
+            android:id="@+id/horizontal1"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="#E91E63"
+            android:layout_height="1dp"
+            android:background="@color/white"
+            android:layout_marginTop="5dp"
             android:layout_below="@id/highTemperature"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/hourlyTempRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_below="@id/horizontal1"
+            android:layout_marginTop="5dp"
+            android:scrollbars="horizontal" />
+        <View
+            android:id="@+id/horizontal2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/white"
+            android:layout_marginTop="5dp"
+            android:layout_below="@id/hourlyTempRecyclerView"/>
+
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
