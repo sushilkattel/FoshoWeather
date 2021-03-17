@@ -6,13 +6,16 @@ import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
@@ -23,10 +26,18 @@ import com.cloutstory.foshoweather.httpRequests.ApiUtils
 import com.cloutstory.foshoweather.models.HourlyMetaData
 
 import com.google.gson.Gson
+import java.lang.System.currentTimeMillis
+import java.time.Clock
+import java.time.Instant
+import java.time.Instant.now
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     val context = this
     var city = "Maple Grove"
+    val timeHours = Calendar.HOUR_OF_DAY
     lateinit var locationManager: LocationManager
     private var hasGps = false
     private var hasNetwork = false
@@ -38,12 +49,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        getWeatherIcon()
+        //getWeatherIcon()
         ApiUtils.getInstance(this)
         getLocationBtn()
         getLocation()
         createHourlyCardView()
     }
+
     //get Location
 
     @SuppressLint("MissingPermission")
@@ -124,6 +136,7 @@ class MainActivity : AppCompatActivity() {
     //Populate Weather Data
     private fun populateCurrentWeatherData() {
         val fetchWeatherListener = object : CustomListener<String> {
+            @RequiresApi(Build.VERSION_CODES.O)
             override fun getResult(result: String) {
               if(result.isNotEmpty()) {
                   Log.d("Response", result)
@@ -140,8 +153,22 @@ class MainActivity : AppCompatActivity() {
                   val feel = weatherData.get("main").asJsonObject.get("feels_like").toString().toDouble().toInt().toString()
                   val feelsText = findViewById<TextView>(R.id.feelsLike)
                   feelsText.text = "FEELS LIKE $feel°"
-
-                  //Location *EXPERIMENTAL*
+                  //LocalTime
+                  val now = currentTimeMillis()/1000
+                  fun getCurrentTime(): Int {
+                      val calendar = Calendar.getInstance()
+                      return calendar.get(Calendar.HOUR)
+                  }
+                  val time = getCurrentTime()
+                  Log.d("TIME", "Response2: $time")
+                  Log.d("TIME", "Response: $now")
+                  //weatherIcon
+                  val weatherIconView = findViewById<ImageView>(R.id.weatherIcon)
+                  val weatherSunny = R.drawable.icon_sunny
+                  val weather = weatherData.get("weather").asJsonArray[0].asJsonObject.get("icon").toString().replace("\"", "")
+                  val weatherIconUrl = "http://openweathermap.org/img/w/$weather.png"
+                  Log.d("ICON", "Result: $weatherIconUrl")
+                  Picasso.get().load(weatherSunny).into(weatherIconView)
               } else {
                   Log.e("ERROR", "Weather Data is empty")
               }
@@ -156,14 +183,17 @@ class MainActivity : AppCompatActivity() {
             override fun getResult(result: String) {
                 if (result.isNotEmpty()) {
                     val forecastData = stringToWeatherForecast(result)
-                    val hourlyListJson = forecastData.get("hourly").asJsonArray
+                    val hourlyListJson = forecastData.get("hourly").asJsonArray.drop(1).toString()
+                    val dt = forecastData.get("current").asJsonObject.get("dt").toString()
+                    Log.d("UNIX", "Response: $dt")
+                    Log.d("HOURS","Response: $timeHours")
 
                     fun hourlyJsonToArray(result: String): Array<HourlyMetaData>? {
                         val gson = Gson()
                         return gson.fromJson(hourlyListJson, Array<HourlyMetaData>::class.java)
                     }
                     val hourlyArray = hourlyJsonToArray(result)
-                    val hourlyArrayResponse = hourlyArray?.get(1).toString()
+                    val hourlyArrayResponse = hourlyArray?.get(3).toString()
                     Log.d("HourlyResult", hourlyArrayResponse)
                     if (hourlyArray != null) {
                         val hourlyCardRecyclerView = findViewById<RecyclerView>(R.id.hourlyTempRecyclerView)
@@ -181,12 +211,12 @@ class MainActivity : AppCompatActivity() {
                 ?.fetchWeatherForecast(lat = latitudeUser, lon = longitudeUser, listener = fetchWeatherForecastListener)
     }
     //Example: How to change Weather Icon
-    fun getWeatherIcon() {
+    /*fun getWeatherIcon() {
         val weatherIconUrl = findViewById<ImageView>(R.id.weatherIcon)
         val weatherSunny = R.drawable.icon_sunny
         var weather: String = "sunny"
         if (weather == "sunny") {
             Picasso.get().load(weatherSunny).into(weatherIconUrl);
         }
-    }
+    } */
 }
