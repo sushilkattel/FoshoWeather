@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_warm"
+    android:background="@drawable/gradient_cold"
     tools:context=".MainActivity">
     <RelativeLayout
         android:layout_width="match_parent"
@@ -12,11 +12,13 @@
 
         <ImageView
             android:id="@+id/weatherIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             app:srcCompat="@drawable/icon_sunny"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="54.6dp" />
+            android:layout_marginTop="50dp"
+            android:adjustViewBounds="true"
+            />
 
         <TextView
             android:id="@+id/city"
@@ -48,12 +50,13 @@
             android:layout_height="wrap_content"
             android:text="30"
             android:layout_below="@id/description"
-            android:layout_alignLeft="@id/description"
-            android:layout_marginTop="-16dp"
-            android:layout_marginLeft="55dp"
+            android:layout_centerHorizontal="true"
+            android:textAlignment="center"
+            android:layout_marginTop="-10dp"
             android:textSize="60sp"
             android:fontFamily="@font/futuraptbook"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white"
+            android:gravity="center_horizontal" />
 
         <TextView
             android:id="@+id/degreeSymbol"
@@ -62,11 +65,11 @@
             android:text="°"
             android:layout_below="@id/description"
             android:layout_alignRight="@id/temperature"
-            android:layout_marginRight="-20dp"
-            android:layout_marginTop="-10dp"
+            android:layout_marginTop="-8dp"
+            android:layout_marginRight="-22dp"
             android:textSize="50sp"
             android:fontFamily="@font/futuraptbook"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white" />
         <TextView
             android:id="@+id/feelsLike"
             android:layout_width="wrap_content"

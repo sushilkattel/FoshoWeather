@@ -26,12 +26,13 @@ import com.cloutstory.foshoweather.httpRequests.ApiUtils
 import com.cloutstory.foshoweather.models.HourlyMetaData
 
 import com.google.gson.Gson
+import kotlinx.datetime.toLocalDate
+import kotlinx.datetime.toLocalDateTime
 import java.lang.System.currentTimeMillis
-import java.time.Clock
-import java.time.Instant
+import java.text.SimpleDateFormat
+import java.time.*
 import java.time.Instant.now
-import java.time.LocalDateTime
-import java.time.LocalTime
+import java.time.Instant.ofEpochSecond
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -54,6 +55,8 @@ class MainActivity : AppCompatActivity() {
         getLocationBtn()
         getLocation()
         createHourlyCardView()
+        getWeatherIcon()
+        populateDailyWeatherData()
     }
 
     //get Location
@@ -119,6 +122,9 @@ class MainActivity : AppCompatActivity() {
         buttonRefresh.setOnClickListener{
             getLocation()
             populateCurrentWeatherData()
+            createHourlyCardView()
+            getWeatherIcon()
+            populateDailyWeatherData()
         }
     }
 
@@ -131,6 +137,34 @@ class MainActivity : AppCompatActivity() {
     fun stringToWeatherForecast(WeatherForecastString: String): JsonObject {
         val data = JsonParser.parseString(WeatherForecastString).asJsonObject
         return data
+    }
+    //Weather Icon and Description
+    private fun getWeatherIcon () {
+        val fetchWeatherForecastListener = object : CustomListener<String> {
+            override fun getResult(result: String) {
+                if(result.isNotEmpty()) {
+                    val descriptionResponse = stringToWeatherForecast(result).get("current").asJsonObject.get("weather").asJsonArray[0].asJsonObject.get("main").toString().substringAfter('"').substringBefore('"')
+                    val iconResponse = stringToWeatherForecast(result).get("current").asJsonObject.get("weather").asJsonArray[0].asJsonObject.get("icon").toString().substringAfter('"').substringBefore('"')
+                    Log.d("ICON", "result: $iconResponse")
+                    //URL: http://openweathermap.org/img/wn/10d@2x.png
+                    //View Finders
+                    val weatherIconView = findViewById<ImageView>(R.id.weatherIcon)
+                    val descriptionTextView = findViewById<TextView>(R.id.description)
+                    Picasso.get().load("https://openweathermap.org/img/wn/$iconResponse.png").into(weatherIconView)
+                    descriptionTextView.text = "$descriptionResponse AF"
+                    if (iconResponse == "01d") {
+                        Picasso.get().load("https://drive.google.com/uc?id=1MNo_7gyDzrJ3SCIdzQSQyTsnl7tSkc6F").into(weatherIconView)
+                        descriptionTextView.text = "Sunny AF"
+                    }
+                } else {
+                    Log.d("ICON", "Could not retrieve data")
+
+                }
+            }
+
+        }
+        ApiUtils.getInstance()
+                ?.fetchWeatherForecast(lat = latitudeUser, lon = longitudeUser, listener = fetchWeatherForecastListener)
     }
 
     //Populate Weather Data
@@ -162,13 +196,14 @@ class MainActivity : AppCompatActivity() {
                   val time = getCurrentTime()
                   Log.d("TIME", "Response2: $time")
                   Log.d("TIME", "Response: $now")
-                  //weatherIcon
+                  /*//weatherIcon
                   val weatherIconView = findViewById<ImageView>(R.id.weatherIcon)
                   val weatherSunny = R.drawable.icon_sunny
                   val weather = weatherData.get("weather").asJsonArray[0].asJsonObject.get("icon").toString().replace("\"", "")
                   val weatherIconUrl = "http://openweathermap.org/img/w/$weather.png"
                   Log.d("ICON", "Result: $weatherIconUrl")
-                  Picasso.get().load(weatherSunny).into(weatherIconView)
+                  //Picasso.get().load("https://drive.google.com/uc?id=1MNo_7gyDzrJ3SCIdzQSQyTsnl7tSkc6F").into(weatherIconView)
+                  //Picasso.get().load("https://openweathermap.org/img/w/$weather.png").into(weatherIconView) */
               } else {
                   Log.e("ERROR", "Weather Data is empty")
               }
@@ -203,6 +238,23 @@ class MainActivity : AppCompatActivity() {
                     }
                 } else {
                     Log.d("HourlyResult", "Could not Retrieve HourlyResult")
+                }
+            }
+
+        }
+        ApiUtils.getInstance()
+                ?.fetchWeatherForecast(lat = latitudeUser, lon = longitudeUser, listener = fetchWeatherForecastListener)
+    }
+    //Populate Daily Weather Data
+    private fun populateDailyWeatherData() {
+        val fetchWeatherForecastListener = object : CustomListener<String> {
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun getResult(result: String) {
+                if(result.isNotEmpty()) {
+                    val dailyWeather = stringToWeatherForecast(result).get("hourly").asJsonArray
+                    val netDailyTime = dailyWeather[0].asJsonObject.get("dt").toString().toLong()
+                    val dailyTime = LocalDateTime.ofInstant(ofEpochSecond(netDailyTime), ZoneId.systemDefault()).dayOfWeek.toString()
+                    Log.d("DAILY", "Response: $dailyTime")
                 }
             }
 
