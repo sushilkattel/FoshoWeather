@@ -26,6 +26,15 @@ import com.cloutstory.foshoweather.httpRequests.ApiUtils
 import com.cloutstory.foshoweather.models.DailyDataModels.DailyMetaDataTemp
 import com.cloutstory.foshoweather.models.DailyMetaData
 import com.cloutstory.foshoweather.models.HourlyMetaData
+import com.google.android.gms.common.api.Status
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.model.RectangularBounds
+import com.google.android.libraries.places.api.model.TypeFilter
+import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 
 import com.google.gson.Gson
 import kotlinx.datetime.toLocalDate
@@ -53,16 +62,52 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        //getWeatherIcon()
+        //Functions
         ApiUtils.getInstance(this)
         getLocationBtn()
         getLocation()
         createHourlyCardView()
         getWeatherIcon()
         populateDailyWeatherData()
-    }
+        getCity()
 
+    }
+    //get City
+    fun getCity () {
+        val googleApiKey = "AIzaSyAa1Nk32qmyINwXwxPqc5bX9yvfplc7v40"
+        if (!Places.isInitialized()) {
+            Places.initialize(applicationContext, googleApiKey)
+        }
+        val placesClient: PlacesClient = Places.createClient(this)
+        // Initialize the AutocompleteSupportFragment.
+        val autocompleteFragment =
+            supportFragmentManager.findFragmentById(R.id.autocomplete_fragment)
+                    as AutocompleteSupportFragment
+        autocompleteFragment.setTypeFilter(TypeFilter.CITIES)
+
+
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG))
+
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
+            override fun onPlaceSelected(place: Place) {
+                // TODO: Get info about the selected place.
+                Log.d("PLACES", "Place: ${place.name}, ${place.latLng?.latitude}")
+                latitudeUser = place.latLng?.latitude.toString()
+                longitudeUser = place.latLng?.longitude.toString()
+                populateCurrentWeatherData()
+                createHourlyCardView()
+                getWeatherIcon()
+                populateDailyWeatherData()
+            }
+
+            override fun onError(status: Status) {
+                // TODO: Handle the error.
+                Log.d("PLACES", "An error occurred: $status")
+            }
+        })
+    }
     //get Location
 
     @SuppressLint("MissingPermission")

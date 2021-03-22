@@ -123,7 +123,8 @@
             android:id="@+id/getLocationBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Check" />
+            android:text="Check"
+            android:layout_below="@id/dailyRecyclerView"/>
         <View
             android:id="@+id/horizontal1"
             android:layout_width="match_parent"
@@ -153,6 +154,16 @@
             android:layout_height="match_parent"
             android:layout_below="@id/horizontal2"
             android:layout_marginTop="5dp"/>
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            app:cardCornerRadius="10dp"
+            android:layout_margin="5dp">
+            <fragment android:id="@+id/autocomplete_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment" />
+        </androidx.cardview.widget.CardView>
 
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
