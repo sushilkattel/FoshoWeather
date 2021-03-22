@@ -12,4 +12,5 @@
     <color name="pinkish">#C3608B</color>
     <color name="darkOrange">#C22828</color>
     <color name="lightOrange">#EFA25F</color>
+    <color name="grey">#CCCCCC</color>
 </resources>

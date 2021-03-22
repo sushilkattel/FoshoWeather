@@ -23,11 +23,15 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.cloutstory.foshoweather.httpRequests.CustomListener
 import com.cloutstory.foshoweather.httpRequests.ApiUtils
+import com.cloutstory.foshoweather.models.DailyDataModels.DailyMetaDataTemp
+import com.cloutstory.foshoweather.models.DailyMetaData
 import com.cloutstory.foshoweather.models.HourlyMetaData
 
 import com.google.gson.Gson
 import kotlinx.datetime.toLocalDate
 import kotlinx.datetime.toLocalDateTime
+import org.json.JSONArray
+import org.json.JSONObject
 import java.lang.System.currentTimeMillis
 import java.text.SimpleDateFormat
 import java.time.*
@@ -251,10 +255,37 @@ class MainActivity : AppCompatActivity() {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun getResult(result: String) {
                 if(result.isNotEmpty()) {
-                    val dailyWeather = stringToWeatherForecast(result).get("hourly").asJsonArray
+                    val dailyWeatherJson = stringToWeatherForecast(result).get("daily").asJsonArray.toString()
+                    //Json excluding first array object
+                    val dailyWeatherJsonParse = stringToWeatherForecast(result).get("daily").asJsonArray.drop(1).toString()
+                    Log.d("DAILY", "Response: $dailyWeatherJson")
+                    fun dailyJsonToArray(result: String): Array<DailyMetaData>? {
+                        val gson = Gson()
+                        return gson.fromJson(dailyWeatherJsonParse, Array<DailyMetaData>::class.java)
+                    }
+                    val dailyArray = dailyJsonToArray(result)
+                    //Update High Low Weather
+                    val highWeatherText = findViewById<TextView>(R.id.highTemperature)
+                    val lowWeatherText = findViewById<TextView>(R.id.lowTemperature)
+                    val highWeather = stringToWeatherForecast(result).get("daily").asJsonArray.get(0).asJsonObject.get("temp").asJsonObject.get("max").toString().toFloat().toInt().toString()
+                    val lowWeather = stringToWeatherForecast(result).get("daily").asJsonArray.get(0).asJsonObject.get("temp").asJsonObject.get("min").toString().toFloat().toInt().toString()
+                    highWeatherText.text = "H:" + highWeather + "°"
+                    lowWeatherText.text = "L:" + lowWeather + "°"
+
+                    if (dailyArray != null) {
+                        val dailyCardRecyclerView = findViewById<RecyclerView>(R.id.dailyRecyclerView)
+                        dailyCardRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+                        val dailyCardAdapter = DailyCardAdapter(dailyArray)
+                        dailyCardRecyclerView.adapter = dailyCardAdapter
+                    }
+                    /* Get High Temp Example
+                    val dailyTempArray = JSONObject((dailyArray?.get(0)?.temp).toString())
+                    val dailyTemp = dailyTempArray.get("day")
+                    Log.d("DAILY", "Result: $dailyTemp") */
+                    /* Get Time Example
                     val netDailyTime = dailyWeather[0].asJsonObject.get("dt").toString().toLong()
                     val dailyTime = LocalDateTime.ofInstant(ofEpochSecond(netDailyTime), ZoneId.systemDefault()).dayOfWeek.toString()
-                    Log.d("DAILY", "Response: $dailyTime")
+                    Log.d("DAILY", "Response: $dailyTime") */
                 }
             }
 

@@ -4,9 +4,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.cloutstory.foshoweather.models.HourlyMetaData
+import com.squareup.picasso.Picasso
 import java.util.*
 
 class HourlyCardAdapter(private val hourlyList: Array<HourlyMetaData>):
@@ -75,10 +77,14 @@ class HourlyCardAdapter(private val hourlyList: Array<HourlyMetaData>):
             }
             holder.temp.text = hourlyList[position].temp?.toInt().toString() + "°"
             }
+        //Icon
+        val hourlyIcon = hourlyList[position].weather?.get(0)?.icon
+        Picasso.get().load("https://openweathermap.org/img/wn/$hourlyIcon.png").into(holder.icon)
     }
 
     class HourlyCardViewHolder(val view: View): RecyclerView.ViewHolder(view) {
         val time = itemView.findViewById<TextView>(R.id.hourlyTime)
         val temp = itemView.findViewById<TextView>(R.id.hourlyTemp)
+        val icon = itemView.findViewById<ImageView>(R.id.cardWeatherIcon)
     }
 }

@@ -8,16 +8,16 @@ data class DailyMetaData (
         var dt: Long? = null,
         var sunrise: Long? = null,
         var sunset: Long? = null,
-        var temp: List<DailyMetaDataTemp>? = null,
-        var feels_like: List<DailyMetaDataFeelsLike>,
+        var temp: Object? = null,
+        var feels_like: Object? = null,
         var pressure: Int? = null,
         var humidity: Int? = null,
         var dew_point: Float? = null,
         var wind_speed: Float? = null,
         var wind_deg: Float? = null,
-        var weather: Array<DailyMetaDataWeather>? = null,
+        var weather: List<DailyMetaDataWeather>? = null,
         var clouds: Int? = null,
-        var pop: Int? = null,
+        var pop: Float? = null,
         var uvi: Float? = null
 
 ){

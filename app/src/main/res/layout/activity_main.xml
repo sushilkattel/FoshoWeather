@@ -147,5 +147,12 @@
             android:layout_marginTop="5dp"
             android:layout_below="@id/hourlyTempRecyclerView"/>
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/dailyRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/horizontal2"
+            android:layout_marginTop="5dp"/>
+
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
