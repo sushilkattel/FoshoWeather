@@ -17,12 +17,12 @@
 
         <ImageView
             android:id="@+id/cardWeatherIcon"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
             android:layout_centerInParent="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginLeft="10dp"
             android:adjustViewBounds="true"
+            android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/hourlyTime"
             app:srcCompat="@drawable/icon_sunny" />
@@ -48,6 +48,7 @@
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="12sp"
+            android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cardWeatherIcon" />
 

@@ -38,11 +38,64 @@ class DailyCardAdapter(private val dailyList: Array<DailyMetaData>):
         val dailyTempArray = JSONObject((dailyList[position].temp).toString())
         val dailyTempLow = dailyTempArray.get("min").toString().toFloat().toInt().toString()
         val dailyTempHigh = dailyTempArray.get("max").toString().toFloat().toInt().toString()
-        //Weather Icon
-        val iconId = dailyList[position].weather?.get(0)?.icon
-        Picasso.get().load("https://openweathermap.org/img/wn/$iconId.png").into(holder.icon)
         holder.lowTemp.text = dailyTempLow + "°"
         holder.highTemp.text = dailyTempHigh + "°"
+        //Icons
+        val hourlyIcon = dailyList[position].weather?.get(0)?.icon
+        if (hourlyIcon == "01d") {
+            Picasso.get().load("https://drive.google.com/uc?id=1BuMvcNN3-OqM7YdcE3nXHAVe-Lh14xRG").into(holder.icon)
+        }
+        if (hourlyIcon == "01n") {
+            Picasso.get().load("https://drive.google.com/uc?id=1vnLEWuexXdL3ISOl2sgnbUhyyEcetrfP").into(holder.icon)
+        }
+        if (hourlyIcon == "02d") {
+            Picasso.get().load("https://drive.google.com/uc?id=1wR50x7BS739UJXkLJIM95kfNwExZgGXQ").into(holder.icon)
+        }
+        if (hourlyIcon == "02n") {
+            Picasso.get().load("https://drive.google.com/uc?id=1KJiKwPQP3M77iVuhLgDE8oTPaCfCxt_y").into(holder.icon)
+        }
+        if (hourlyIcon == "03d") {
+            Picasso.get().load("https://drive.google.com/uc?id=1wR50x7BS739UJXkLJIM95kfNwExZgGXQ").into(holder.icon)
+        }
+        if (hourlyIcon == "03n") {
+            Picasso.get().load("https://drive.google.com/uc?id=1wR50x7BS739UJXkLJIM95kfNwExZgGXQ").into(holder.icon)
+        }
+        if (hourlyIcon == "04d") {
+            Picasso.get().load("https://drive.google.com/uc?id=1wR50x7BS739UJXkLJIM95kfNwExZgGXQ").into(holder.icon)
+        }
+        if (hourlyIcon == "04n") {
+            Picasso.get().load("https://drive.google.com/uc?id=1wR50x7BS739UJXkLJIM95kfNwExZgGXQ").into(holder.icon)
+        }
+        if (hourlyIcon == "09d") {
+            Picasso.get().load("https://drive.google.com/uc?id=151Sp8yQia6jcjyhpa4pFMMuPyIkKlE8i").into(holder.icon)
+        }
+        if (hourlyIcon == "09n") {
+            Picasso.get().load("https://drive.google.com/uc?id=151Sp8yQia6jcjyhpa4pFMMuPyIkKlE8i").into(holder.icon)
+        }
+        if (hourlyIcon == "10d") {
+            Picasso.get().load("https://drive.google.com/uc?id=1g0kAJG5YiV-ug5IINxhTybsXu3DdWYC-").into(holder.icon)
+        }
+        if (hourlyIcon == "10n") {
+            Picasso.get().load("https://drive.google.com/uc?id=1sn63Y8f_YulJ1TrcVVSpIDkAa5goeScL").into(holder.icon)
+        }
+        if (hourlyIcon == "11d") {
+            Picasso.get().load("https://drive.google.com/uc?id=1dbJVJzzpOoC-RWqQLLpid6VxEvQOSLYK").into(holder.icon)
+        }
+        if (hourlyIcon == "11n") {
+            Picasso.get().load("https://drive.google.com/uc?id=1dbJVJzzpOoC-RWqQLLpid6VxEvQOSLYK").into(holder.icon)
+        }
+        if (hourlyIcon == "13d") {
+            Picasso.get().load("https://drive.google.com/uc?id=1xpxYOgcCBO-PkGOJY72XUeZ7wfJel5nX").into(holder.icon)
+        }
+        if (hourlyIcon == "13n") {
+            Picasso.get().load("https://drive.google.com/uc?id=1xpxYOgcCBO-PkGOJY72XUeZ7wfJel5nX").into(holder.icon)
+        }
+        if (hourlyIcon == "50d") {
+            Picasso.get().load("https://drive.google.com/uc?id=1jJMoA4wxXQrRoKsd8Z5LTJs-WqL_syn7").into(holder.icon)
+        }
+        if (hourlyIcon == "50n") {
+            Picasso.get().load("https://drive.google.com/uc?id=1jJMoA4wxXQrRoKsd8Z5LTJs-WqL_syn7").into(holder.icon)
+        }
 
 
     }

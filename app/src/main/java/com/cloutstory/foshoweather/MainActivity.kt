@@ -1,8 +1,10 @@
 package com.cloutstory.foshoweather
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -13,9 +15,12 @@ import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
@@ -53,12 +58,13 @@ class MainActivity : AppCompatActivity() {
     var city = "Maple Grove"
     val timeHours = Calendar.HOUR_OF_DAY
     lateinit var locationManager: LocationManager
+    private val locationPermissionCode = 2
     private var hasGps = false
     private var hasNetwork = false
     private var locationGps : Location? = null
     private var locationNetwork: Location? = null
-    var longitudeUser: String = ""
-    var latitudeUser: String = ""
+    var longitudeUser: String = "-87.623177"
+    var latitudeUser: String = "41.881832"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -115,6 +121,9 @@ class MainActivity : AppCompatActivity() {
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         hasGps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         hasNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), locationPermissionCode)
+        }
         if(hasGps || hasNetwork) {
 
             if(hasGps) {
@@ -153,12 +162,18 @@ class MainActivity : AppCompatActivity() {
                     longitudeUser = locationNetwork!!.longitude.toString()
                     latitudeUser = locationNetwork!!.latitude.toString()
                     populateCurrentWeatherData()
+                    createHourlyCardView()
+                    getWeatherIcon()
+                    populateDailyWeatherData()
                 }else {
                     Log.d("AndroidLocationStatus, ","GPS Latitude: "+ locationGps!!.latitude)
                     Log.d("AndroidLocationStatus, ","GPS Longitude: "+ locationGps!!.longitude)
                     longitudeUser = locationNetwork!!.longitude.toString()
                     latitudeUser = locationNetwork!!.latitude.toString()
                     populateCurrentWeatherData()
+                    createHourlyCardView()
+                    getWeatherIcon()
+                    populateDailyWeatherData()
                 }
             }
 
@@ -166,6 +181,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
         }
     }
+
     fun getLocationBtn() {
         val buttonRefresh: Button = findViewById<Button>(R.id.getLocationBtn)
         buttonRefresh.setOnClickListener{
@@ -193,17 +209,65 @@ class MainActivity : AppCompatActivity() {
             override fun getResult(result: String) {
                 if(result.isNotEmpty()) {
                     val descriptionResponse = stringToWeatherForecast(result).get("current").asJsonObject.get("weather").asJsonArray[0].asJsonObject.get("main").toString().substringAfter('"').substringBefore('"')
-                    val iconResponse = stringToWeatherForecast(result).get("current").asJsonObject.get("weather").asJsonArray[0].asJsonObject.get("icon").toString().substringAfter('"').substringBefore('"')
-                    Log.d("ICON", "result: $iconResponse")
+                    val hourlyIcon = stringToWeatherForecast(result).get("current").asJsonObject.get("weather").asJsonArray[0].asJsonObject.get("icon").toString().substringAfter('"').substringBefore('"')
                     //URL: http://openweathermap.org/img/wn/10d@2x.png
                     //View Finders
                     val weatherIconView = findViewById<ImageView>(R.id.weatherIcon)
                     val descriptionTextView = findViewById<TextView>(R.id.description)
-                    Picasso.get().load("https://openweathermap.org/img/wn/$iconResponse.png").into(weatherIconView)
                     descriptionTextView.text = "$descriptionResponse AF"
-                    if (iconResponse == "01d") {
-                        Picasso.get().load("https://drive.google.com/uc?id=1MNo_7gyDzrJ3SCIdzQSQyTsnl7tSkc6F").into(weatherIconView)
-                        descriptionTextView.text = "Sunny AF"
+                    if (hourlyIcon == "01d") {
+                        Picasso.get().load("https://drive.google.com/uc?id=1BuMvcNN3-OqM7YdcE3nXHAVe-Lh14xRG").into(weatherIconView)
+                    }
+                    if (hourlyIcon == "01n") {
+                        Picasso.get().load("https://drive.google.com/uc?id=1vnLEWuexXdL3ISOl2sgnbUhyyEcetrfP").into(weatherIconView)
+                    }
+                    if (hourlyIcon == "02d") {
+                        Picasso.get().load("https://drive.google.com/uc?id=1wR50x7BS739UJXkLJIM95kfNwExZgGXQ").into(weatherIconView)
+                    }
+                    if (hourlyIcon == "02n") {
+                        Picasso.get().load("https://drive.google.com/uc?id=1KJiKwPQP3M77iVuhLgDE8oTPaCfCxt_y").into(weatherIconView)
+                    }
+                    if (hourlyIcon == "03d") {
+                        Picasso.get().load("https://drive.google.com/uc?id=1wR50x7BS739UJXkLJIM95kfNwExZgGXQ").into(weatherIconView)
+                    }
+                    if (hourlyIcon == "03n") {
+                        Picasso.get().load("https://drive.google.com/uc?id=1wR50x7BS739UJXkLJIM95kfNwExZgGXQ").into(weatherIconView)
+                    }
+                    if (hourlyIcon == "04d") {
+                        Picasso.get().load("https://drive.google.com/uc?id=1wR50x7BS739UJXkLJIM95kfNwExZgGXQ").into(weatherIconView)
+                    }
+                    if (hourlyIcon == "04n") {
+                        Picasso.get().load("https://drive.google.com/uc?id=1wR50x7BS739UJXkLJIM95kfNwExZgGXQ").into(weatherIconView)
+                    }
+                    if (hourlyIcon == "09d") {
+                        Picasso.get().load("https://drive.google.com/uc?id=151Sp8yQia6jcjyhpa4pFMMuPyIkKlE8i").into(weatherIconView)
+                    }
+                    if (hourlyIcon == "09n") {
+                        Picasso.get().load("https://drive.google.com/uc?id=151Sp8yQia6jcjyhpa4pFMMuPyIkKlE8i").into(weatherIconView)
+                    }
+                    if (hourlyIcon == "10d") {
+                        Picasso.get().load("https://drive.google.com/uc?id=1g0kAJG5YiV-ug5IINxhTybsXu3DdWYC-").into(weatherIconView)
+                    }
+                    if (hourlyIcon == "10n") {
+                        Picasso.get().load("https://drive.google.com/uc?id=1sn63Y8f_YulJ1TrcVVSpIDkAa5goeScL").into(weatherIconView)
+                    }
+                    if (hourlyIcon == "11d") {
+                        Picasso.get().load("https://drive.google.com/uc?id=1dbJVJzzpOoC-RWqQLLpid6VxEvQOSLYK").into(weatherIconView)
+                    }
+                    if (hourlyIcon == "11n") {
+                        Picasso.get().load("https://drive.google.com/uc?id=1dbJVJzzpOoC-RWqQLLpid6VxEvQOSLYK").into(weatherIconView)
+                    }
+                    if (hourlyIcon == "13d") {
+                        Picasso.get().load("https://drive.google.com/uc?id=1xpxYOgcCBO-PkGOJY72XUeZ7wfJel5nX").into(weatherIconView)
+                    }
+                    if (hourlyIcon == "13n") {
+                        Picasso.get().load("https://drive.google.com/uc?id=1xpxYOgcCBO-PkGOJY72XUeZ7wfJel5nX").into(weatherIconView)
+                    }
+                    if (hourlyIcon == "50d") {
+                        Picasso.get().load("https://drive.google.com/uc?id=1jJMoA4wxXQrRoKsd8Z5LTJs-WqL_syn7").into(weatherIconView)
+                    }
+                    if (hourlyIcon == "50n") {
+                        Picasso.get().load("https://drive.google.com/uc?id=1jJMoA4wxXQrRoKsd8Z5LTJs-WqL_syn7").into(weatherIconView)
                     }
                 } else {
                     Log.d("ICON", "Could not retrieve data")
