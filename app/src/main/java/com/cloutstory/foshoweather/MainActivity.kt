@@ -75,6 +75,7 @@ class MainActivity : AppCompatActivity() {
         createHourlyCardView()
         getWeatherIcon()
         populateDailyWeatherData()
+        populateCurrentWeatherData()
         getCity()
 
     }
@@ -124,61 +125,63 @@ class MainActivity : AppCompatActivity() {
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), locationPermissionCode)
         }
-        if(hasGps || hasNetwork) {
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+            if(hasGps || hasNetwork) {
 
-            if(hasGps) {
-                Log.d("AndroidLocationStatus", "hasGPS")
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0F, object: LocationListener {
-                    override fun onLocationChanged(location: Location) {
-                        if(location !=null) {
-                            locationGps = location
+                if(hasGps) {
+                    Log.d("AndroidLocationStatus", "hasGPS")
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0F, object: LocationListener {
+                        override fun onLocationChanged(location: Location) {
+                            if(location !=null) {
+                                locationGps = location
+                            }
                         }
+                    })
+                    val localGpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                    if (localGpsLocation !=null) {
+                        locationGps = localGpsLocation
                     }
-                })
-                val localGpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-                if (localGpsLocation !=null) {
-                    locationGps = localGpsLocation
                 }
-            }
-            if(hasNetwork) {
-                Log.d("AndroidLocationStatus", "hasNetwork")
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0F, object: LocationListener {
-                    override fun onLocationChanged(location: Location) {
-                        if(location !=null) {
-                            locationNetwork = location
+                if(hasNetwork) {
+                    Log.d("AndroidLocationStatus", "hasNetwork")
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0F, object: LocationListener {
+                        override fun onLocationChanged(location: Location) {
+                            if(location !=null) {
+                                locationNetwork = location
+                            }
                         }
+                    })
+                    val localNetworkLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                    if (localNetworkLocation !=null) {
+                        locationNetwork = localNetworkLocation
                     }
-                })
-                val localNetworkLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-                if (localNetworkLocation !=null) {
-                    locationNetwork = localNetworkLocation
                 }
-            }
 
-            if(locationGps!= null && locationNetwork !=null) {
-                if (locationGps!!.accuracy > locationNetwork!!.accuracy) {
-                    Log.d("AndroidLocationStatus, ","Network Latitude: "+ locationNetwork!!.latitude)
-                    Log.d("AndroidLocationStatus, ","Network Longitude: "+ locationNetwork!!.longitude)
-                    longitudeUser = locationNetwork!!.longitude.toString()
-                    latitudeUser = locationNetwork!!.latitude.toString()
-                    populateCurrentWeatherData()
-                    createHourlyCardView()
-                    getWeatherIcon()
-                    populateDailyWeatherData()
-                }else {
-                    Log.d("AndroidLocationStatus, ","GPS Latitude: "+ locationGps!!.latitude)
-                    Log.d("AndroidLocationStatus, ","GPS Longitude: "+ locationGps!!.longitude)
-                    longitudeUser = locationNetwork!!.longitude.toString()
-                    latitudeUser = locationNetwork!!.latitude.toString()
-                    populateCurrentWeatherData()
-                    createHourlyCardView()
-                    getWeatherIcon()
-                    populateDailyWeatherData()
+                if(locationGps!= null && locationNetwork !=null) {
+                    if (locationGps!!.accuracy > locationNetwork!!.accuracy) {
+                        Log.d("AndroidLocationStatus, ","Network Latitude: "+ locationNetwork!!.latitude)
+                        Log.d("AndroidLocationStatus, ","Network Longitude: "+ locationNetwork!!.longitude)
+                        longitudeUser = locationNetwork!!.longitude.toString()
+                        latitudeUser = locationNetwork!!.latitude.toString()
+                        populateCurrentWeatherData()
+                        createHourlyCardView()
+                        getWeatherIcon()
+                        populateDailyWeatherData()
+                    }else {
+                        Log.d("AndroidLocationStatus, ","GPS Latitude: "+ locationGps!!.latitude)
+                        Log.d("AndroidLocationStatus, ","GPS Longitude: "+ locationGps!!.longitude)
+                        longitudeUser = locationNetwork!!.longitude.toString()
+                        latitudeUser = locationNetwork!!.latitude.toString()
+                        populateCurrentWeatherData()
+                        createHourlyCardView()
+                        getWeatherIcon()
+                        populateDailyWeatherData()
+                    }
                 }
-            }
 
-        }else {
-            startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }else {
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }
         }
     }
 
@@ -215,59 +218,8 @@ class MainActivity : AppCompatActivity() {
                     val weatherIconView = findViewById<ImageView>(R.id.weatherIcon)
                     val descriptionTextView = findViewById<TextView>(R.id.description)
                     descriptionTextView.text = "$descriptionResponse AF"
-                    if (hourlyIcon == "01d") {
-                        Picasso.get().load("https://drive.google.com/uc?id=1BuMvcNN3-OqM7YdcE3nXHAVe-Lh14xRG").into(weatherIconView)
-                    }
-                    if (hourlyIcon == "01n") {
-                        Picasso.get().load("https://drive.google.com/uc?id=1vnLEWuexXdL3ISOl2sgnbUhyyEcetrfP").into(weatherIconView)
-                    }
-                    if (hourlyIcon == "02d") {
-                        Picasso.get().load("https://drive.google.com/uc?id=1wR50x7BS739UJXkLJIM95kfNwExZgGXQ").into(weatherIconView)
-                    }
-                    if (hourlyIcon == "02n") {
-                        Picasso.get().load("https://drive.google.com/uc?id=1KJiKwPQP3M77iVuhLgDE8oTPaCfCxt_y").into(weatherIconView)
-                    }
-                    if (hourlyIcon == "03d") {
-                        Picasso.get().load("https://drive.google.com/uc?id=1wR50x7BS739UJXkLJIM95kfNwExZgGXQ").into(weatherIconView)
-                    }
-                    if (hourlyIcon == "03n") {
-                        Picasso.get().load("https://drive.google.com/uc?id=1wR50x7BS739UJXkLJIM95kfNwExZgGXQ").into(weatherIconView)
-                    }
-                    if (hourlyIcon == "04d") {
-                        Picasso.get().load("https://drive.google.com/uc?id=1wR50x7BS739UJXkLJIM95kfNwExZgGXQ").into(weatherIconView)
-                    }
-                    if (hourlyIcon == "04n") {
-                        Picasso.get().load("https://drive.google.com/uc?id=1wR50x7BS739UJXkLJIM95kfNwExZgGXQ").into(weatherIconView)
-                    }
-                    if (hourlyIcon == "09d") {
-                        Picasso.get().load("https://drive.google.com/uc?id=151Sp8yQia6jcjyhpa4pFMMuPyIkKlE8i").into(weatherIconView)
-                    }
-                    if (hourlyIcon == "09n") {
-                        Picasso.get().load("https://drive.google.com/uc?id=151Sp8yQia6jcjyhpa4pFMMuPyIkKlE8i").into(weatherIconView)
-                    }
-                    if (hourlyIcon == "10d") {
-                        Picasso.get().load("https://drive.google.com/uc?id=1g0kAJG5YiV-ug5IINxhTybsXu3DdWYC-").into(weatherIconView)
-                    }
-                    if (hourlyIcon == "10n") {
-                        Picasso.get().load("https://drive.google.com/uc?id=1sn63Y8f_YulJ1TrcVVSpIDkAa5goeScL").into(weatherIconView)
-                    }
-                    if (hourlyIcon == "11d") {
-                        Picasso.get().load("https://drive.google.com/uc?id=1dbJVJzzpOoC-RWqQLLpid6VxEvQOSLYK").into(weatherIconView)
-                    }
-                    if (hourlyIcon == "11n") {
-                        Picasso.get().load("https://drive.google.com/uc?id=1dbJVJzzpOoC-RWqQLLpid6VxEvQOSLYK").into(weatherIconView)
-                    }
-                    if (hourlyIcon == "13d") {
-                        Picasso.get().load("https://drive.google.com/uc?id=1xpxYOgcCBO-PkGOJY72XUeZ7wfJel5nX").into(weatherIconView)
-                    }
-                    if (hourlyIcon == "13n") {
-                        Picasso.get().load("https://drive.google.com/uc?id=1xpxYOgcCBO-PkGOJY72XUeZ7wfJel5nX").into(weatherIconView)
-                    }
-                    if (hourlyIcon == "50d") {
-                        Picasso.get().load("https://drive.google.com/uc?id=1jJMoA4wxXQrRoKsd8Z5LTJs-WqL_syn7").into(weatherIconView)
-                    }
-                    if (hourlyIcon == "50n") {
-                        Picasso.get().load("https://drive.google.com/uc?id=1jJMoA4wxXQrRoKsd8Z5LTJs-WqL_syn7").into(weatherIconView)
+                    if (hourlyIcon !=null) {
+                        Picasso.get().load("https://foshoweather.s3.amazonaws.com/icons/$hourlyIcon.png").into(weatherIconView)
                     }
                 } else {
                     Log.d("ICON", "Could not retrieve data")
