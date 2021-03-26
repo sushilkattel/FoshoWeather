@@ -41,7 +41,7 @@ class DailyCardAdapter(private val dailyList: Array<DailyMetaData>):
         holder.lowTemp.text = dailyTempLow + "°"
         holder.highTemp.text = dailyTempHigh + "°"
         //Icons
-        val hourlyIcon = dailyList[position].weather?.get(0)?.icon
+        var hourlyIcon = dailyList[position].weather?.get(0)?.icon
         if (hourlyIcon !=null) {
             Picasso.get().load("https://foshoweather.s3.amazonaws.com/icons/$hourlyIcon.png").into(holder.icon)
         }

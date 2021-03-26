@@ -140,7 +140,8 @@
             android:layout_height="80dp"
             android:layout_below="@id/horizontal1"
             android:layout_marginTop="5dp"
-            android:scrollbars="none" />
+            android:scrollbars="none"
+            android:background="#0000" />
         <View
             android:id="@+id/horizontal2"
             android:layout_width="match_parent"
@@ -154,7 +155,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/horizontal2"
-            android:layout_marginTop="5dp"/>
+            android:layout_marginTop="5dp"
+            android:background="#0000"/>
         <androidx.cardview.widget.CardView
             android:id="@+id/searchCardView"
             android:layout_width="match_parent"

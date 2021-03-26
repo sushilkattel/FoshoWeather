@@ -2,12 +2,15 @@ package com.cloutstory.foshoweather
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -19,6 +22,7 @@ import android.widget.Toast
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -52,6 +56,8 @@ import java.time.*
 import java.time.Instant.now
 import java.time.Instant.ofEpochSecond
 import java.util.*
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 class MainActivity : AppCompatActivity() {
     val context = this
@@ -71,13 +77,71 @@ class MainActivity : AppCompatActivity() {
         //Functions
         ApiUtils.getInstance(this)
         getLocationBtn()
+        askForPermissions()
         getLocation()
         createHourlyCardView()
         getWeatherIcon()
         populateDailyWeatherData()
         populateCurrentWeatherData()
         getCity()
+        if (askForPermissions()) {
+            getLocationBtn()
+            askForPermissions()
+            getLocation()
+            createHourlyCardView()
+            getWeatherIcon()
+            populateDailyWeatherData()
+            populateCurrentWeatherData()
+        }
 
+    }
+    //get User Permitted
+    fun isPermissionsAllowed(): Boolean {
+        return ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun askForPermissions(): Boolean {
+        if (!isPermissionsAllowed()) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this as Activity,Manifest.permission.ACCESS_FINE_LOCATION)) {
+                showPermissionDeniedDialog()
+            } else {
+                ActivityCompat.requestPermissions(this as Activity,arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),locationPermissionCode)
+            }
+            return false
+        }
+        return true
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int,permissions: Array<String>,grantResults: IntArray) {
+        when (requestCode) {
+            locationPermissionCode -> {
+                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission is granted, you can perform your operation here
+                    getLocation()
+                } else {
+                    // permission is denied, you can ask for permission again, if you want
+                    //  askForPermissions()
+                }
+                return
+            }
+        }
+    }
+
+    private fun showPermissionDeniedDialog() {
+        AlertDialog.Builder(this)
+                .setTitle("Location Permission Denied")
+                .setMessage("Location Permission is denied, Please allow Location permission from App Settings.")
+                .setPositiveButton("App Settings",
+                        DialogInterface.OnClickListener { dialogInterface, i ->
+                            // send to app settings if permission is denied permanently
+                            val intent = Intent()
+                            intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                            val uri = Uri.fromParts("package", getPackageName(), null)
+                            intent.data = uri
+                            startActivity(intent)
+                        })
+                .setNegativeButton("Cancel",null)
+                .show()
     }
     //get City
     fun getCity () {
@@ -125,64 +189,67 @@ class MainActivity : AppCompatActivity() {
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), locationPermissionCode)
         }
-        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
-            if(hasGps || hasNetwork) {
+        fun getGPS () {
+            if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+                if(hasGps || hasNetwork) {
 
-                if(hasGps) {
-                    Log.d("AndroidLocationStatus", "hasGPS")
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0F, object: LocationListener {
-                        override fun onLocationChanged(location: Location) {
-                            if(location !=null) {
-                                locationGps = location
+                    if(hasGps) {
+                        Log.d("AndroidLocationStatus", "hasGPS")
+                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0F, object: LocationListener {
+                            override fun onLocationChanged(location: Location) {
+                                if(location !=null) {
+                                    locationGps = location
+                                }
                             }
+                        })
+                        val localGpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                        if (localGpsLocation !=null) {
+                            locationGps = localGpsLocation
                         }
-                    })
-                    val localGpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-                    if (localGpsLocation !=null) {
-                        locationGps = localGpsLocation
                     }
-                }
-                if(hasNetwork) {
-                    Log.d("AndroidLocationStatus", "hasNetwork")
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0F, object: LocationListener {
-                        override fun onLocationChanged(location: Location) {
-                            if(location !=null) {
-                                locationNetwork = location
+                    if(hasNetwork) {
+                        Log.d("AndroidLocationStatus", "hasNetwork")
+                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0F, object: LocationListener {
+                            override fun onLocationChanged(location: Location) {
+                                if(location !=null) {
+                                    locationNetwork = location
+                                }
                             }
+                        })
+                        val localNetworkLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                        if (localNetworkLocation !=null) {
+                            locationNetwork = localNetworkLocation
                         }
-                    })
-                    val localNetworkLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-                    if (localNetworkLocation !=null) {
-                        locationNetwork = localNetworkLocation
                     }
-                }
 
-                if(locationGps!= null && locationNetwork !=null) {
-                    if (locationGps!!.accuracy > locationNetwork!!.accuracy) {
-                        Log.d("AndroidLocationStatus, ","Network Latitude: "+ locationNetwork!!.latitude)
-                        Log.d("AndroidLocationStatus, ","Network Longitude: "+ locationNetwork!!.longitude)
-                        longitudeUser = locationNetwork!!.longitude.toString()
-                        latitudeUser = locationNetwork!!.latitude.toString()
-                        populateCurrentWeatherData()
-                        createHourlyCardView()
-                        getWeatherIcon()
-                        populateDailyWeatherData()
-                    }else {
-                        Log.d("AndroidLocationStatus, ","GPS Latitude: "+ locationGps!!.latitude)
-                        Log.d("AndroidLocationStatus, ","GPS Longitude: "+ locationGps!!.longitude)
-                        longitudeUser = locationNetwork!!.longitude.toString()
-                        latitudeUser = locationNetwork!!.latitude.toString()
-                        populateCurrentWeatherData()
-                        createHourlyCardView()
-                        getWeatherIcon()
-                        populateDailyWeatherData()
+                    if(locationGps!= null && locationNetwork !=null) {
+                        if (locationGps!!.accuracy > locationNetwork!!.accuracy) {
+                            Log.d("AndroidLocationStatus, ","Network Latitude: "+ locationNetwork!!.latitude)
+                            Log.d("AndroidLocationStatus, ","Network Longitude: "+ locationNetwork!!.longitude)
+                            longitudeUser = locationNetwork!!.longitude.toString()
+                            latitudeUser = locationNetwork!!.latitude.toString()
+                            populateCurrentWeatherData()
+                            createHourlyCardView()
+                            getWeatherIcon()
+                            populateDailyWeatherData()
+                        }else {
+                            Log.d("AndroidLocationStatus, ","GPS Latitude: "+ locationGps!!.latitude)
+                            Log.d("AndroidLocationStatus, ","GPS Longitude: "+ locationGps!!.longitude)
+                            longitudeUser = locationNetwork!!.longitude.toString()
+                            latitudeUser = locationNetwork!!.latitude.toString()
+                            populateCurrentWeatherData()
+                            createHourlyCardView()
+                            getWeatherIcon()
+                            populateDailyWeatherData()
+                        }
                     }
-                }
 
-            }else {
-                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                }else {
+                    showPermissionDeniedDialog()
+                }
             }
         }
+        getGPS()
     }
 
     fun getLocationBtn() {
