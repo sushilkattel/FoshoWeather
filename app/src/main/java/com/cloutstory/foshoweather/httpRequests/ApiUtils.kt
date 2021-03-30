@@ -7,6 +7,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.cloutstory.foshoweather.BuildConfig
 
 class ApiUtils private constructor(context: Context) {
     private var requestQueue: RequestQueue = Volley.newRequestQueue(context.applicationContext)
@@ -50,7 +51,7 @@ class ApiUtils private constructor(context: Context) {
     companion object {
         private const val TAG = "ApiUtils"
         private var instance: ApiUtils? = null
-        const val APIKey = "de5ec822deb46bf3982d1809ff13d90e"
+        const val APIKey = BuildConfig.WEATHER_API_KEY
 
         @Synchronized
         fun getInstance(context: Context): ApiUtils? {

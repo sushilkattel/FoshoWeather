@@ -71,7 +71,6 @@ class MainActivity : AppCompatActivity() {
     private var locationNetwork: Location? = null
     var longitudeUser: String = "-87.623177"
     var latitudeUser: String = "41.881832"
-    //var testAPIKey = BuildConfig.GOOGLE_API_KEY
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
