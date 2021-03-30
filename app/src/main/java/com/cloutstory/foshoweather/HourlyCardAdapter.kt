@@ -56,6 +56,10 @@ class HourlyCardAdapter(private val hourlyList: Array<HourlyMetaData>):
                             if (finalTime > 48) {
                                 val finalTimePM = finalTime - 48
                                 holder.time.text = finalTimePM.toString() + "am"
+                                if (finalTime > 60) {
+                                    val finalTimePM = finalTime - 60
+                                    holder.time.text = finalTimePM.toString() + "pm"
+                                }
                             }
                         }
                     }
@@ -71,6 +75,9 @@ class HourlyCardAdapter(private val hourlyList: Array<HourlyMetaData>):
                 }
                 if (finalTime.toInt() == 48) {
                     holder.time.text = "Midnight"
+                }
+                if (finalTime.toInt() == 60) {
+                    holder.time.text = "Noon"
                 }
             } else {
                 holder.time.text = "Now"

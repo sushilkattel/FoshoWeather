@@ -1,7 +1,11 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id("com.google.secrets_gradle_plugin") version "0.5"
 }
+def apiKeyPropertiesFile = rootProject.file("secrets.properties")
+def apiKeyProperties = new Properties()
+apiKeyProperties.load(new FileInputStream(apiKeyPropertiesFile))
 
 android {
     compileSdkVersion 30
@@ -13,10 +17,10 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-
+        buildConfigField "String", "GOOGLE_API_KEY", apiKeyProperties['GOOGLE_API_KEY']
+        buildConfigField "String", "WEATHER_API_KEY", apiKeyProperties['WEATHER_API_KEY']
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         release {
             minifyEnabled false
