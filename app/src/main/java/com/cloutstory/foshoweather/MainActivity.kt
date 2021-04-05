@@ -146,7 +146,7 @@ class MainActivity : AppCompatActivity() {
     }
     //get City
     fun getCity () {
-        val googleApiKey = "AIzaSyAa1Nk32qmyINwXwxPqc5bX9yvfplc7v40"
+        val googleApiKey = BuildConfig.GOOGLE_API_KEY
         if (!Places.isInitialized()) {
             Places.initialize(applicationContext, googleApiKey)
         }
